@@ -31,10 +31,12 @@ EXPOSE 8080
 # Variáveis de ambiente
 ENV PYTHONUNBUFFERED=1
 ENV FLASK_APP=app.py
+ENV FLASK_ENV=production
+ENV PORT=8080
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')"
 
-# Comando para iniciar
-CMD ["python", "app.py"]
+# Comando para iniciar com gunicorn (melhor para produção)
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "2", "--timeout", "120", "--access-logfile", "-", "--error-logfile", "-", "app:app"]
